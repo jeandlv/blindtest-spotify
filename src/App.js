@@ -75,6 +75,7 @@ class App extends Component {
                 <p>Nombre de musiques chargées : {this.state.tracks.length}</p>
                 <p>Nom de la première musique : {this.state.tracks[0].track.name}</p>
                 <AlbumCover track={this.state.tracks[0].track}/>
+                <Sound url={this.state.tracks[0].track.preview_url} playStatus={Sound.status.PLAYING}/>
               </div>
             ) : (
               <img src={loadingImage} className="App-logo" alt="logo"/>
