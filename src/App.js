@@ -7,7 +7,7 @@ import './App.css';
 import Sound from 'react-sound';
 import Button from './Button';
 
-const apiToken = 'BQAglEA9MhNhEuaQe5QSKZ3FpXf7NbeSVe4Lun157jvn-MGV9z4_UXOF7QGTksh4sjJ_xVPUk8y88ce6NJjaZC4f3xDzItJPt9cPh1n46XZFb0NNHa7hpGpZ7yobL0Qe3SnxLMD9t1u-YqEJ_oPyBsIe';
+const apiToken = 'BQBpFm-Lln-WknsSOmbwtl3WZ-eRZioDYZlwDO4NzpJ7ZKGXkCw-OjCTRftRk_hphAb9aoAHZd5zCn1nRNgZSDJTDndMw_u5OCUHpOxMWmh71OP7YKHaNxyW065IztNsmpIgXqD3qZq14DTCSTzuATTy';
 
 function shuffleArray(array) {
   let counter = array.length;
@@ -71,7 +71,10 @@ class App extends Component {
           <p>{this.state.text}</p>
           {this.state.songsLoaded ? 
             (
-              <div></div>
+              <div>
+                <p>Nombre de musiques chargées : {this.state.tracks.length}</p>
+                <p>Nom de la première musique : {this.state.tracks[0].track.name}</p>
+              </div>
             ) : (
               <img src={loadingImage} className="App-logo" alt="logo"/>
             )
