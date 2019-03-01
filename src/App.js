@@ -7,7 +7,7 @@ import './App.css';
 import Sound from 'react-sound';
 import Button from './Button';
 
-const apiToken = 'BQAWlW8viULSA8f807HwmrFhFEgaJNr6lXqObWIhhJawVYecEqaYImYqUK_c2EYc4fribg0jgrU0HGM36Dct_GbPz-3dOeC_BWyIodqxizU8MVE07dme8jlp2HHsNloCaQITfwqZsgh33mxBLgjfYqgK';
+const apiToken = 'BQAK_5WNlaRM4k4XwioZuwQRlscpT7Umo0OeL_NhsMTsn0D47Z7tryWF2bHw6gSXsvGNvuAnMseItA4PwO3UPE01lIVl6GI2AwJLtvjFgU3OosZUDWk1d893l4PtV1phtsYlECsF61N6O7OrYa4MW02P';
 
 function shuffleArray(array) {
   let counter = array.length;
@@ -35,8 +35,10 @@ class App extends Component {
     this.state = {
       text: "",
       tracks: [],
-      songsLoaded: false
+      songsLoaded: false,
+      answerId: ""
     };
+    this.checkAnswer = this.checkAnswer.bind(this);
   }
 
   componentDidMount() {
@@ -55,9 +57,21 @@ class App extends Component {
       this.setState({
         text: "Your library tracks were well loaded",
         tracks: data.items,
-        songsLoaded: true
+        songsLoaded: true,
+        answerId: data.items[0].track.id
       });
     })
+  }
+
+  checkAnswer(answerId) {
+    console.log("answerId :", answerId)
+    console.log("this.state.answerId :", this.state.answerId)
+    if (answerId === this.state.answerId) {
+      swal('Bravo', 'Vous avez la bonne réponse', 'success');
+    }
+    else {
+      swal('Echec', 'Vous avez la mauvaise réponse', 'error')
+    }
   }
 
   render() {
@@ -90,9 +104,9 @@ class App extends Component {
           {this.state.songsLoaded ? 
             (
               <div>
-                <Button>{firstTrack.track.name}</Button>
-                <Button>{secondTrack.track.name}</Button>
-                <Button>{thirdTrack.track.name}</Button>
+                <Button onClick={() => this.checkAnswer(firstTrack.track.id)}>{firstTrack.track.name}</Button>
+                <Button onClick={() => this.checkAnswer(secondTrack.track.id)}>{secondTrack.track.name}</Button>
+                <Button onClick={() => this.checkAnswer(thirdTrack.track.id)}>{thirdTrack.track.name}</Button>
               </div>
             ) : (
               <div/>
