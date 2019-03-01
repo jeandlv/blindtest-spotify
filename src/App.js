@@ -32,6 +32,15 @@ class App extends Component {
 
   constructor() {
     super();
+    this.state = {
+      text: ""
+    };
+  }
+
+  componentDidMount() {
+    this.setState({
+      text: "Bonjour"
+    });
   }
 
   render() {
@@ -42,7 +51,7 @@ class App extends Component {
           <h1 className="App-title">Bienvenue sur le Blindtest</h1>
         </header>
         <div className="App-images">
-          <p>Il va falloir modifier le code pour faire un vrai Blindtest !</p>
+          <p>{this.state.text}</p>
         </div>
         <div className="App-buttons">
         </div>
