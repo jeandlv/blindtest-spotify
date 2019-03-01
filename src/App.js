@@ -74,6 +74,7 @@ class App extends Component {
               <div>
                 <p>Nombre de musiques chargées : {this.state.tracks.length}</p>
                 <p>Nom de la première musique : {this.state.tracks[0].track.name}</p>
+                <AlbumCover track={this.state.tracks[0].track}/>
               </div>
             ) : (
               <img src={loadingImage} className="App-logo" alt="logo"/>
@@ -84,6 +85,18 @@ class App extends Component {
         </div>
       </div>
     );
+  }
+}
+
+class AlbumCover extends Component {
+  
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    const src = this.props.track.album.images[0].url;
+    return (<img src={src} style={{ width: 400, height: 400 }} />);
   }
 }
 
