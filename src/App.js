@@ -7,7 +7,7 @@ import './App.css';
 import Sound from 'react-sound';
 import Button from './Button';
 
-const apiToken = 'BQBpFm-Lln-WknsSOmbwtl3WZ-eRZioDYZlwDO4NzpJ7ZKGXkCw-OjCTRftRk_hphAb9aoAHZd5zCn1nRNgZSDJTDndMw_u5OCUHpOxMWmh71OP7YKHaNxyW065IztNsmpIgXqD3qZq14DTCSTzuATTy';
+const apiToken = 'BQAWlW8viULSA8f807HwmrFhFEgaJNr6lXqObWIhhJawVYecEqaYImYqUK_c2EYc4fribg0jgrU0HGM36Dct_GbPz-3dOeC_BWyIodqxizU8MVE07dme8jlp2HHsNloCaQITfwqZsgh33mxBLgjfYqgK';
 
 function shuffleArray(array) {
   let counter = array.length;
@@ -61,6 +61,10 @@ class App extends Component {
   }
 
   render() {
+    const firstTrack = this.state.tracks[0];
+    const secondTrack = this.state.tracks[1];
+    const thirdTrack = this.state.tracks[2];
+
     return (
       <div className="App">
         <header className="App-header">
@@ -83,6 +87,17 @@ class App extends Component {
           }
         </div>
         <div className="App-buttons">
+          {this.state.songsLoaded ? 
+            (
+              <div>
+                <Button>{firstTrack.track.name}</Button>
+                <Button>{secondTrack.track.name}</Button>
+                <Button>{thirdTrack.track.name}</Button>
+              </div>
+            ) : (
+              <div/>
+            )
+          }
         </div>
       </div>
     );
