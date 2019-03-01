@@ -1,13 +1,13 @@
 /*global swal*/
 
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import loading from './loading.svg';
+import logoImage from './logo.svg';
+import loadingImage from './loading.svg';
 import './App.css';
 import Sound from 'react-sound';
 import Button from './Button';
 
-const apiToken = 'BQACA64fs0s8V6H7My8QaMrFcmCMp0PSmnSOfcVSkValrWx3PJ9IF9T1sOaMB6ZAUd_5yTsaNjVaxySe3OR74o2gpcWQruS8FFx398f4LLR--DZd6YT6q_YMU-DqXJIfdMgvJI-HrcOTnrzp2X8ytzLm';
+const apiToken = 'BQAglEA9MhNhEuaQe5QSKZ3FpXf7NbeSVe4Lun157jvn-MGV9z4_UXOF7QGTksh4sjJ_xVPUk8y88ce6NJjaZC4f3xDzItJPt9cPh1n46XZFb0NNHa7hpGpZ7yobL0Qe3SnxLMD9t1u-YqEJ_oPyBsIe';
 
 function shuffleArray(array) {
   let counter = array.length;
@@ -34,7 +34,8 @@ class App extends Component {
     super();
     this.state = {
       text: "",
-      tracks: []
+      tracks: [],
+      songsLoaded: false
     };
   }
 
@@ -53,7 +54,8 @@ class App extends Component {
       console.log("Réponse reçue ! Voilà ce que j'ai reçu : ", data);
       this.setState({
         text: "Your library tracks were well loaded",
-        tracks: data.items
+        tracks: data.items,
+        songsLoaded: true
       });
     })
   }
@@ -62,11 +64,18 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo"/>
+          <img src={logoImage} className="App-logo" alt="logo"/>
           <h1 className="App-title">Bienvenue sur le Blindtest</h1>
         </header>
         <div className="App-images">
           <p>{this.state.text}</p>
+          {this.state.songsLoaded ? 
+            (
+              <div></div>
+            ) : (
+              <img src={loadingImage} className="App-logo" alt="logo"/>
+            )
+          }
         </div>
         <div className="App-buttons">
         </div>
