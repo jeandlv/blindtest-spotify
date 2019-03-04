@@ -40,8 +40,6 @@ class App extends Component {
       songsLoaded: false,
       currentTrack: ""
     };
-    this.checkAnswer = this.checkAnswer.bind(this);
-    this.changeTrack = this.changeTrack.bind(this);
   }
 
   componentDidMount() {
@@ -65,7 +63,7 @@ class App extends Component {
     })
   }
 
-  checkAnswer(answerId) {
+  checkAnswer = answerId => {
     if (answerId === this.state.currentTrack.track.id) {
       swal('Bravo', 'Vous avez la boonne réponse', 'success')
         .then(this.changeTrack);
@@ -75,7 +73,7 @@ class App extends Component {
     }
   }
 
-  changeTrack() {
+  changeTrack = () => {
     this.setState({
       currentTrack : this.state.tracks[getRandomNumber(this.state.tracks.length)],
       text: "Nouvelle musique"
