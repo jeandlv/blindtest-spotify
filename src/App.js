@@ -7,7 +7,7 @@ import './App.css';
 import Sound from 'react-sound';
 import Button from './Button';
 
-const apiToken = 'BQAK_5WNlaRM4k4XwioZuwQRlscpT7Umo0OeL_NhsMTsn0D47Z7tryWF2bHw6gSXsvGNvuAnMseItA4PwO3UPE01lIVl6GI2AwJLtvjFgU3OosZUDWk1d893l4PtV1phtsYlECsF61N6O7OrYa4MW02P';
+const apiToken = 'BQCsQFekVafbKjlbbSdcgmHpUiQjbk-jGR57Llae0fGmvj4zCr87QfhseWxyzFeKefSvXGplpw47sgyqo4cgymu3Te_6i5p8i3QW3r2XSqRIiXJ-uc23GAcnPoLcKlXM7b_eZgjC2yvJsoQl7yT8Hw5W';
 
 function shuffleArray(array) {
   let counter = array.length;
@@ -55,19 +55,19 @@ class App extends Component {
     .then((data) => {
       console.log("Réponse reçue ! Voilà ce que j'ai reçu : ", data);
       this.setState({
-        text: "Your library tracks were well loaded",
+        text: "Your library tracks weere well loaded",
         tracks: data.items,
         songsLoaded: true,
-        answerId: data.items[0].track.id
+        currentTrack: data.items[getRandomNumber(data.items.length)]
       });
     })
   }
 
   checkAnswer(answerId) {
     console.log("answerId :", answerId)
-    console.log("this.state.answerId :", this.state.answerId)
-    if (answerId === this.state.answerId) {
-      swal('Bravo', 'Vous avez la bonne réponse', 'success');
+    console.log("this.state.answerId :", this.state.currentTrack.track.id)
+    if (answerId === this.state.currentTrack.track.id) {
+      swal('Bravo', 'Vous avez la boonne réponse', 'success');
     }
     else {
       swal('Echec', 'Vous avez la mauvaise réponse', 'error')
@@ -75,9 +75,9 @@ class App extends Component {
   }
 
   render() {
-    const firstTrack = this.state.tracks[0];
-    const secondTrack = this.state.tracks[1];
-    const thirdTrack = this.state.tracks[2];
+    const firstTrack = this.state.currentTrack;
+    const secondTrack = this.state.tracks[getRandomNumber(this.state.tracks.length)];
+    const thirdTrack = this.state.tracks[getRandomNumber(this.state.tracks.length)];
 
     return (
       <div className="App">
@@ -92,8 +92,8 @@ class App extends Component {
               <div>
                 <p>Nombre de musiques chargées : {this.state.tracks.length}</p>
                 <p>Nom de la première musique : {this.state.tracks[0].track.name}</p>
-                <AlbumCover track={this.state.tracks[0].track}/>
-                <Sound url={this.state.tracks[0].track.preview_url} playStatus={Sound.status.PLAYING}/>
+                <AlbumCover track={firstTrack.track}/>
+                <Sound url={firstTrack.track.preview_url} playStatus={Sound.status.PLAYING}/>
               </div>
             ) : (
               <img src={loadingImage} className="App-logo" alt="logo"/>
