@@ -75,15 +75,19 @@ class App extends Component {
 
   changeTrack = () => {
     this.setState({
-      currentTrack : this.state.tracks[getRandomNumber(this.state.tracks.length)],
+      currentTrack : this.getRandomTrack(),
       text: "Nouvelle musique"
     })
   }
 
+  getRandomTrack = () => {
+    return this.state.tracks.length > 2 ? this.state.tracks[getRandomNumber(this.state.tracks.length)] : "";
+  }
+
   render() {
     const firstTrack = this.state.currentTrack;
-    const secondTrack = this.state.tracks.length > 2 ? this.state.tracks[getRandomNumber(this.state.tracks.length)] : "";
-    const thirdTrack = this.state.tracks.length > 2 ? this.state.tracks[getRandomNumber(this.state.tracks.length)] : "";
+    const secondTrack = this.getRandomTrack();
+    const thirdTrack = this.getRandomTrack();
     const tracks = shuffleArray([firstTrack, secondTrack, thirdTrack]);
 
     return (
