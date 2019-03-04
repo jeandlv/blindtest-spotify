@@ -7,7 +7,7 @@ import './App.css';
 import Sound from 'react-sound';
 import Button from './Button';
 
-const apiToken = 'BQBcy8XaUIGUYf5wq2sfd8TULrneL8IHY_FskqA30giwes0_ZXVHta8yNCFaM0Ef10tvlOYFVsqMbW9I-j5kJIm0aK74eC6s6YIExMjJhUdIC9kUj1OyTM1bARh0cRnfN7VfqrvEj8SDBU-rW8roN_Jf';
+const apiToken = 'BQAGMW8ly5JUiYt9LG5A3nV3_KZ1WzggEt-e9O0JeZ0wgRIPMO43yhEv6p82P6vue-4gV3uilySx_A0b2mDo0q5Or9lWMnR7pBHExDsl_KK5yRseYhuEmmkt1CdeeG0RI1OBTmnwwQoDRoA54D_DpWFN';
 
 function shuffleArray(array) {
   let counter = array.length;
@@ -36,9 +36,10 @@ class App extends Component {
       text: "",
       tracks: [],
       songsLoaded: false,
-      answerId: ""
+      currentTrack: ""
     };
     this.checkAnswer = this.checkAnswer.bind(this);
+    this.changeTrack = this.changeTrack.bind(this);
   }
 
   componentDidMount() {
@@ -54,10 +55,10 @@ class App extends Component {
     .then(response => response.json())
     .then((data) => {
       this.setState({
-        text: "Your library tracks weere well loaded",
-        tracks: data.items,
+        text: "Your library tracks were well loaded",
+        tracks: data.items !== undefined ? data.items : [],
         songsLoaded: true,
-        currentTrack: data.items[getRandomNumber(data.items.length)]
+        currentTrack: data.items !== undefined && data.items.length > 0 ? data.items[getRandomNumber(data.items.length)] : ""
       });
     })
   }
@@ -65,20 +66,24 @@ class App extends Component {
   checkAnswer(answerId) {
     if (answerId === this.state.currentTrack.track.id) {
       swal('Bravo', 'Vous avez la boonne réponse', 'success')
-        .then(this.setState({
-          currentTrack : this.state.tracks[getRandomNumber(this.state.tracks.length)],
-          text: "Nouvelle partie"
-        }));
+        .then(this.changeTrack);
     }
     else {
-      swal('Echec', 'Vous aveez la mauvaise réponse', 'error')
+      swal('Echec', 'Vous avez la mauvaise réponse', 'error')
     }
+  }
+
+  changeTrack() {
+    this.setState({
+      currentTrack : this.state.tracks[getRandomNumber(this.state.tracks.length)],
+      text: "Nouvelle musique"
+    })
   }
 
   render() {
     const firstTrack = this.state.currentTrack;
-    const secondTrack = this.state.tracks[getRandomNumber(this.state.tracks.length)];
-    const thirdTrack = this.state.tracks[getRandomNumber(this.state.tracks.length)];
+    const secondTrack = this.state.tracks.length > 2 ? this.state.tracks[getRandomNumber(this.state.tracks.length)] : "";
+    const thirdTrack = this.state.tracks.length > 2 ? this.state.tracks[getRandomNumber(this.state.tracks.length)] : "";
     const tracks = shuffleArray([firstTrack, secondTrack, thirdTrack]);
 
     return (
@@ -92,10 +97,17 @@ class App extends Component {
           {this.state.songsLoaded ? 
             (
               <div>
-                <p>Nombre de musiques chargées : {this.state.tracks.length}</p>
-                <p>Nom de la première musique : {this.state.tracks[0].track.name}</p>
-                <AlbumCover track={firstTrack.track}/>
-                <Sound url={firstTrack.track.preview_url} playStatus={Sound.status.PLAYING}/>
+                {this.state.tracks.length > 0 ? (
+                  <div>
+                    <p>Nombre de musiques chargées : {this.state.tracks.length}</p>
+                    <p>Nom de la première musique : {this.state.tracks[0].track.name}</p>
+                    <AlbumCover track={firstTrack.track}/>
+                    <Sound url={firstTrack.track.preview_url} playStatus={Sound.status.PLAYING}/>
+                  </div>
+                ) : (
+                  <p>Pas de musiques chargées</p>
+                )
+                }
               </div>
             ) : (
               <img src={loadingImage} className="App-logo" alt="logo"/>
@@ -103,7 +115,7 @@ class App extends Component {
           }
         </div>
         <div className="App-buttons">
-          {this.state.songsLoaded ? 
+          {this.state.songsLoaded  && this.state.tracks.length > 2 ? 
             (
               tracks.map(item => (
                   <Button onClick={() => this.checkAnswer(item.track.id)}>{item.track.name}</Button>
