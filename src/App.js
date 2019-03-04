@@ -3,11 +3,13 @@
 import React, { Component } from 'react';
 import logoImage from './logo.svg';
 import loadingImage from './loading.svg';
+import noCoverImage from './no-cover-image.png';
 import './App.css';
 import Sound from 'react-sound';
 import Button from './Button';
 
 const apiToken = 'BQAGMW8ly5JUiYt9LG5A3nV3_KZ1WzggEt-e9O0JeZ0wgRIPMO43yhEv6p82P6vue-4gV3uilySx_A0b2mDo0q5Or9lWMnR7pBHExDsl_KK5yRseYhuEmmkt1CdeeG0RI1OBTmnwwQoDRoA54D_DpWFN';
+const ALBUM_COVER_SIZE = 400;
 
 function shuffleArray(array) {
   let counter = array.length;
@@ -137,8 +139,8 @@ class AlbumCover extends Component {
   }
 
   render() {
-    const src = this.props.track.album.images[0].url;
-    return (<img src={src} style={{ width: 400, height: 400 }} />);
+    const coverImageSrc =  this.props.track.album.images.length > 0 ? this.props.track.album.images[0].url : noCoverImage;
+    return (<img src={coverImageSrc} style={{ width: ALBUM_COVER_SIZE, height: ALBUM_COVER_SIZE }} />);
   }
 }
 
