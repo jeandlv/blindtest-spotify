@@ -7,7 +7,7 @@ import './App.css';
 import Sound from 'react-sound';
 import Button from './Button';
 
-const apiToken = 'BQCsQFekVafbKjlbbSdcgmHpUiQjbk-jGR57Llae0fGmvj4zCr87QfhseWxyzFeKefSvXGplpw47sgyqo4cgymu3Te_6i5p8i3QW3r2XSqRIiXJ-uc23GAcnPoLcKlXM7b_eZgjC2yvJsoQl7yT8Hw5W';
+const apiToken = 'BQBcy8XaUIGUYf5wq2sfd8TULrneL8IHY_FskqA30giwes0_ZXVHta8yNCFaM0Ef10tvlOYFVsqMbW9I-j5kJIm0aK74eC6s6YIExMjJhUdIC9kUj1OyTM1bARh0cRnfN7VfqrvEj8SDBU-rW8roN_Jf';
 
 function shuffleArray(array) {
   let counter = array.length;
@@ -53,7 +53,6 @@ class App extends Component {
     })
     .then(response => response.json())
     .then((data) => {
-      console.log("Réponse reçue ! Voilà ce que j'ai reçu : ", data);
       this.setState({
         text: "Your library tracks weere well loaded",
         tracks: data.items,
@@ -64,13 +63,11 @@ class App extends Component {
   }
 
   checkAnswer(answerId) {
-    console.log("answerId :", answerId)
-    console.log("this.state.answerId :", this.state.currentTrack.track.id)
     if (answerId === this.state.currentTrack.track.id) {
       swal('Bravo', 'Vous avez la boonne réponse', 'success');
     }
     else {
-      swal('Echec', 'Vous avez la mauvaise réponse', 'error')
+      swal('Echec', 'Vous aveez la mauvaise réponse', 'error')
     }
   }
 
@@ -78,6 +75,7 @@ class App extends Component {
     const firstTrack = this.state.currentTrack;
     const secondTrack = this.state.tracks[getRandomNumber(this.state.tracks.length)];
     const thirdTrack = this.state.tracks[getRandomNumber(this.state.tracks.length)];
+    const tracks = shuffleArray([firstTrack, secondTrack, thirdTrack]);
 
     return (
       <div className="App">
@@ -103,11 +101,9 @@ class App extends Component {
         <div className="App-buttons">
           {this.state.songsLoaded ? 
             (
-              <div>
-                <Button onClick={() => this.checkAnswer(firstTrack.track.id)}>{firstTrack.track.name}</Button>
-                <Button onClick={() => this.checkAnswer(secondTrack.track.id)}>{secondTrack.track.name}</Button>
-                <Button onClick={() => this.checkAnswer(thirdTrack.track.id)}>{thirdTrack.track.name}</Button>
-              </div>
+              tracks.map(item => (
+                  <Button onClick={() => this.checkAnswer(item.track.id)}>{item.track.name}</Button>
+              ))
             ) : (
               <div/>
             )
