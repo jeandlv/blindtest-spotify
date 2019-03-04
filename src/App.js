@@ -4,11 +4,12 @@ import React, { Component } from 'react';
 import logoImage from './logo.svg';
 import loadingImage from './loading.svg';
 import noCoverImage from './no-cover-image.png';
+import spotifyApi from './spotifyApiKey.json';
 import './App.css';
 import Sound from 'react-sound';
 import Button from './Button';
 
-const apiToken = 'BQAGMW8ly5JUiYt9LG5A3nV3_KZ1WzggEt-e9O0JeZ0wgRIPMO43yhEv6p82P6vue-4gV3uilySx_A0b2mDo0q5Or9lWMnR7pBHExDsl_KK5yRseYhuEmmkt1CdeeG0RI1OBTmnwwQoDRoA54D_DpWFN';
+const apiToken = spotifyApi.spotifyApiToken
 const ALBUM_COVER_SIZE = 400;
 
 function shuffleArray(array) {
