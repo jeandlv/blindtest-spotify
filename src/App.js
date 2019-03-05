@@ -8,9 +8,12 @@ import spotifyApi from './spotifyApiKey.json';
 import './App.css';
 import Sound from 'react-sound';
 import Button from './Button';
+import get from 'lodash/get';
 
 const apiToken = spotifyApi.spotifyApiToken
 const ALBUM_COVER_SIZE = 400;
+const SWAL_ERROR = 'error';
+const SWAL_SUCCESS = 'success'
 
 function shuffleArray(array) {
   let counter = array.length;
@@ -35,17 +38,18 @@ class App extends Component {
 
   constructor() {
     super();
+    this.trackTimer = null;
     this.state = {
-      text: "",
+      text: '',
       tracks: [],
       songsLoaded: false,
-      currentTrack: ""
+      currentTrack: '',
     };
   }
 
   componentDidMount() {
     this.setState({
-      text: "Bonjour"
+      text: 'Bonjour'
     });
     fetch('https://api.spotify.com/v1/me/tracks', {
       method: 'GET',
@@ -55,34 +59,48 @@ class App extends Component {
     })
     .then(response => response.json())
     .then((data) => {
+      data.items = get(data, 'items', [])
       this.setState({
-        text: "Your library tracks were well loaded",
-        tracks: data.items !== undefined ? data.items : [],
+        text: 'Your library tracks were well loaded',
+        tracks: data.items,
         songsLoaded: true,
-        currentTrack: data.items !== undefined && data.items.length > 0 ? data.items[getRandomNumber(data.items.length)] : ""
+        currentTrack: data.items.length > 0 ? data.items[getRandomNumber(data.items.length)] : {}
       });
+      this.setTimer();
     })
   }
 
-  checkAnswer = answerId => {
+  setTimer = () => {
+    let self = this;
+    this.trackTimer = setTimeout(function() {self.changeTrack()}, 30000)
+  }
+
+  checkAnswer = (answerId) => {
     if (answerId === this.state.currentTrack.track.id) {
-      swal('Bravo', 'Vous avez la boonne réponse', 'success')
-        .then(this.changeTrack);
+      clearTimeout(this.trackTimer)
+      swal('Bravo', 'Vous avez la boonne réponse', SWAL_SUCCESS)
+      .then( () => {
+          this.changeTrack();
+        }
+      );
     }
     else {
-      swal('Echec', 'Vous avez la mauvaise réponse', 'error')
+      swal('Echec', 'Vous avez la mauvaise réponse', SWAL_ERROR)
     }
   }
 
   changeTrack = () => {
+    clearTimeout(this.trackTimer)
     this.setState({
       currentTrack : this.getRandomTrack(),
-      text: "Nouvelle musique"
+      text: 'Nouvelle musique'
     })
+    this.setTimer();
   }
 
+
   getRandomTrack = () => {
-    return this.state.tracks.length > 2 ? this.state.tracks[getRandomNumber(this.state.tracks.length)] : "";
+    return this.state.tracks.length > 2 ? this.state.tracks[getRandomNumber(this.state.tracks.length)] : {};
   }
 
   render() {
@@ -92,12 +110,12 @@ class App extends Component {
     const tracks = shuffleArray([firstTrack, secondTrack, thirdTrack]);
 
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logoImage} className="App-logo" alt="logo"/>
-          <h1 className="App-title">Bienvenue sur le Blindtest</h1>
+      <div className='App'>
+        <header className='App-header'>
+          <img src={logoImage} className='App-logo' alt='logo'/>
+          <h1 className='App-title'>Bienvenue sur le Blindtest</h1>
         </header>
-        <div className="App-images">
+        <div className='App-images'>
           <p>{this.state.text}</p>
           {this.state.songsLoaded ? 
             (
@@ -115,11 +133,11 @@ class App extends Component {
                 }
               </div>
             ) : (
-              <img src={loadingImage} className="App-logo" alt="logo"/>
+              <img src={loadingImage} className='App-logo' alt='logo'/>
             )
           }
         </div>
-        <div className="App-buttons">
+        <div className='App-buttons'>
           {this.state.songsLoaded  && this.state.tracks.length > 2 ? 
             (
               tracks.map(item => (
@@ -142,7 +160,7 @@ class AlbumCover extends Component {
   }
 
   render() {
-    const coverImageSrc =  this.props.track.album.images.length > 0 ? this.props.track.album.images[0].url : noCoverImage;
+    const coverImageSrc = get(this.props.track, 'album.images[0].url', noCoverImage);
     return (<img src={coverImageSrc} style={{ width: ALBUM_COVER_SIZE, height: ALBUM_COVER_SIZE }} />);
   }
 }
