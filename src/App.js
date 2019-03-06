@@ -9,6 +9,7 @@ import './App.css';
 import Sound from 'react-sound';
 import Button from './Button';
 import get from 'lodash/get';
+import { combineReducers, createStore } from 'redux';
 
 const apiToken = spotifyApi.spotifyApiToken
 const ALBUM_COVER_SIZE = 400;
@@ -44,6 +45,8 @@ class App extends Component {
       tracks: [],
       songsLoaded: false,
       currentTrack: '',
+      round: 0,
+      score: 0
     };
   }
 
@@ -62,9 +65,11 @@ class App extends Component {
       data.items = get(data, 'items', [])
       this.setState({
         text: 'Your library tracks were well loaded',
-        tracks: data.items,
-        songsLoaded: true,
-        currentTrack: data.items.length > 0 ? data.items[getRandomNumber(data.items.length)] : {}
+        tracks: data.items
+      });
+      this.pickNewTracks();
+      this.setState({
+        songsLoaded: true
       });
       this.setTimer();
     })
@@ -80,21 +85,36 @@ class App extends Component {
       clearTimeout(this.trackTimer)
       swal('Bravo', 'Vous avez la boonne réponse', SWAL_SUCCESS)
       .then( () => {
+          this.setState({
+            score : this.state.score + 3, 
+            round : this.state.round + 1
+          });
           this.changeTrack();
         }
       );
     }
     else {
       swal('Echec', 'Vous avez la mauvaise réponse', SWAL_ERROR)
+      .then( () => {
+          this.setState({score : this.state.score - 2});
+        }
+      );
     }
   }
 
-  changeTrack = () => {
-    clearTimeout(this.trackTimer)
+  pickNewTracks = () => {
+    let currentTrack = this.getRandomTrack();
+    let secondTrack = this.getRandomTrack();
+    let thirdTrack = this.getRandomTrack();
     this.setState({
-      currentTrack : this.getRandomTrack(),
-      text: 'Nouvelle musique'
-    })
+      proposedTracks: shuffleArray([currentTrack, secondTrack, thirdTrack]),
+      currentTrack: currentTrack
+    });
+  }
+
+  changeTrack = () => {
+    clearTimeout(this.trackTimer);
+    this.pickNewTracks();
     this.setTimer();
   }
 
@@ -104,10 +124,9 @@ class App extends Component {
   }
 
   render() {
-    const firstTrack = this.state.currentTrack;
-    const secondTrack = this.getRandomTrack();
-    const thirdTrack = this.getRandomTrack();
-    const tracks = shuffleArray([firstTrack, secondTrack, thirdTrack]);
+    const currentTrack = this.state.currentTrack;
+    console.log("currentTrack :", currentTrack)
+    const tracks = this.state.proposedTracks;
 
     return (
       <div className='App'>
@@ -124,8 +143,10 @@ class App extends Component {
                   <div>
                     <p>Nombre de musiques chargées : {this.state.tracks.length}</p>
                     <p>Nom de la première musique : {this.state.tracks[0].track.name}</p>
-                    <AlbumCover track={firstTrack.track}/>
-                    <Sound url={firstTrack.track.preview_url} playStatus={Sound.status.PLAYING}/>
+                    <p>Manche : {this.state.round}</p>
+                    <p>Score : {this.state.score} points</p>
+                    <AlbumCover track={currentTrack.track}/>
+                    <Sound url={currentTrack.track.preview_url} playStatus={Sound.status.PLAYING}/>
                   </div>
                 ) : (
                   <p>Pas de musiques chargées</p>
