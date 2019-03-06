@@ -3,6 +3,9 @@
 # dependencies
 /node_modules
 
+# secured data
+spotifyApiKey.json
+
 # testing
 /coverage
 
