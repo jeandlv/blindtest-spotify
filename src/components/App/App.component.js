@@ -1,20 +1,21 @@
 /*global swal*/
 
 import React, { Component } from 'react';
-import logoImage from './logo.svg';
-import loadingImage from './loading.svg';
-import noCoverImage from './no-cover-image.png';
-import spotifyApi from './spotifyApiKey.json';
+import logoImage from '../../bin/logo.svg';
+import loadingImage from '../../bin/loading.svg';
+import noCoverImage from '../../bin/no-cover-image.png';
+import spotifyApi from '../../spotifyApiKey.json';
 import './App.css';
 import Sound from 'react-sound';
-import Button from './Button';
+import Button from '../Button';
 import get from 'lodash/get';
-import { combineReducers, createStore } from 'redux';
+import uuid from 'uuid';
 
 const apiToken = spotifyApi.spotifyApiToken
 const ALBUM_COVER_SIZE = 400;
 const SWAL_ERROR = 'error';
-const SWAL_SUCCESS = 'success'
+const SWAL_SUCCESS = 'success';
+const ALT_TEXT_COVER_IMG = "Album Cover Image";
 
 function shuffleArray(array) {
   let counter = array.length;
@@ -42,9 +43,9 @@ class App extends Component {
     this.trackTimer = null;
     this.state = {
       text: '',
-      tracks: [],
       songsLoaded: false,
       currentTrack: '',
+      proposedTracks: [],
       round: 0,
       score: 0
     };
@@ -63,9 +64,9 @@ class App extends Component {
     .then(response => response.json())
     .then((data) => {
       data.items = get(data, 'items', [])
+      this.props.loadTracks(data.items);
       this.setState({
-        text: 'Your library tracks were well loaded',
-        tracks: data.items
+        text: 'Your library tracks were well loaded'
       });
       this.pickNewTracks();
       this.setState({
@@ -120,13 +121,12 @@ class App extends Component {
 
 
   getRandomTrack = () => {
-    return this.state.tracks.length > 2 ? this.state.tracks[getRandomNumber(this.state.tracks.length)] : {};
+    return this.props.tracks.length > 2 ? this.props.tracks[getRandomNumber(this.props.tracks.length)] : {};
   }
 
   render() {
     const currentTrack = this.state.currentTrack;
-    console.log("currentTrack :", currentTrack)
-    const tracks = this.state.proposedTracks;
+    const tracksToPropose = this.state.proposedTracks;
 
     return (
       <div className='App'>
@@ -139,10 +139,10 @@ class App extends Component {
           {this.state.songsLoaded ? 
             (
               <div>
-                {this.state.tracks.length > 0 ? (
+                {this.props.tracks.length > 0 ? (
                   <div>
-                    <p>Nombre de musiques chargées : {this.state.tracks.length}</p>
-                    <p>Nom de la première musique : {this.state.tracks[0].track.name}</p>
+                    <p>Nombre de musiques chargées : {this.props.tracks.length}</p>
+                    <p>Nom de la première musique : {this.props.tracks[0].track.name}</p>
                     <p>Manche : {this.state.round}</p>
                     <p>Score : {this.state.score} points</p>
                     <AlbumCover track={currentTrack.track}/>
@@ -159,10 +159,10 @@ class App extends Component {
           }
         </div>
         <div className='App-buttons'>
-          {this.state.songsLoaded  && this.state.tracks.length > 2 ? 
+          {this.state.songsLoaded  && this.props.tracks.length > 2 ? 
             (
-              tracks.map(item => (
-                  <Button onClick={() => this.checkAnswer(item.track.id)}>{item.track.name}</Button>
+              tracksToPropose.map(item => (
+                  <Button key={uuid.v4()} onClick={() => this.checkAnswer(item.track.id)}>{item.track.name}</Button>
               ))
             ) : (
               <div/>
@@ -175,14 +175,10 @@ class App extends Component {
 }
 
 class AlbumCover extends Component {
-  
-  constructor(props) {
-    super(props);
-  }
 
   render() {
     const coverImageSrc = get(this.props.track, 'album.images[0].url', noCoverImage);
-    return (<img src={coverImageSrc} style={{ width: ALBUM_COVER_SIZE, height: ALBUM_COVER_SIZE }} />);
+    return (<img alt={ALT_TEXT_COVER_IMG} src={coverImageSrc} style={{ width: ALBUM_COVER_SIZE, height: ALBUM_COVER_SIZE }} />);
   }
 }
 
