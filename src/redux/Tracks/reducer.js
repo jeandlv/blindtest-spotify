@@ -1,6 +1,8 @@
+import * as constants from './constants';
+
 const tracks = (state = [], action) => {
 	switch(action.type) {
-		case 'LOAD_TRACKS' :
+		case constants.LOAD_TRACKS :
 		  return action.tracks;
 		 default:
 		 	return state;

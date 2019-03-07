@@ -7,7 +7,7 @@ import noCoverImage from '../../bin/no-cover-image.png';
 import spotifyApi from '../../spotifyApiKey.json';
 import './App.css';
 import Sound from 'react-sound';
-import Button from '../Button';
+import Button from '../Button/index';
 import get from 'lodash/get';
 import uuid from 'uuid';
 
@@ -16,6 +16,9 @@ const ALBUM_COVER_SIZE = 400;
 const SWAL_ERROR = 'error';
 const SWAL_SUCCESS = 'success';
 const ALT_TEXT_COVER_IMG = "Album Cover Image";
+
+const TEXT_LOADED_TRACKS = "Your library tracks were well loaded"
+const TEXT_APPLICATION_LOADED = "Bonjour";
 
 function shuffleArray(array) {
   let counter = array.length;
@@ -42,19 +45,13 @@ class App extends Component {
     super();
     this.trackTimer = null;
     this.state = {
-      text: '',
       songsLoaded: false,
       currentTrack: '',
-      proposedTracks: [],
-      round: 0,
-      score: 0
+      proposedTracks: []
     };
   }
 
   componentDidMount() {
-    this.setState({
-      text: 'Bonjour'
-    });
     fetch('https://api.spotify.com/v1/me/tracks', {
       method: 'GET',
       headers: {
@@ -65,9 +62,6 @@ class App extends Component {
     .then((data) => {
       data.items = get(data, 'items', [])
       this.props.loadTracks(data.items);
-      this.setState({
-        text: 'Your library tracks were well loaded'
-      });
       this.pickNewTracks();
       this.setState({
         songsLoaded: true
@@ -86,10 +80,8 @@ class App extends Component {
       clearTimeout(this.trackTimer)
       swal('Bravo', 'Vous avez la boonne réponse', SWAL_SUCCESS)
       .then( () => {
-          this.setState({
-            score : this.state.score + 3, 
-            round : this.state.round + 1
-          });
+          this.props.changeScoreWhenWinning();
+          this.props.setNewRound();
           this.changeTrack();
         }
       );
@@ -97,7 +89,7 @@ class App extends Component {
     else {
       swal('Echec', 'Vous avez la mauvaise réponse', SWAL_ERROR)
       .then( () => {
-          this.setState({score : this.state.score - 2});
+          this.props.changeScoreWhenLosing();
         }
       );
     }
@@ -135,16 +127,16 @@ class App extends Component {
           <h1 className='App-title'>Bienvenue sur le Blindtest</h1>
         </header>
         <div className='App-images'>
-          <p>{this.state.text}</p>
           {this.state.songsLoaded ? 
             (
               <div>
                 {this.props.tracks.length > 0 ? (
                   <div>
+                    <p>{TEXT_LOADED_TRACKS}</p>
                     <p>Nombre de musiques chargées : {this.props.tracks.length}</p>
                     <p>Nom de la première musique : {this.props.tracks[0].track.name}</p>
-                    <p>Manche : {this.state.round}</p>
-                    <p>Score : {this.state.score} points</p>
+                    <p>Manche : {this.props.progression.round}</p>
+                    <p>Score : {this.props.progression.score} points</p>
                     <AlbumCover track={currentTrack.track}/>
                     <Sound url={currentTrack.track.preview_url} playStatus={Sound.status.PLAYING}/>
                   </div>
@@ -154,7 +146,10 @@ class App extends Component {
                 }
               </div>
             ) : (
-              <img src={loadingImage} className='App-logo' alt='logo'/>
+              <div>
+                <p>{TEXT_APPLICATION_LOADED}</p>
+                <img src={loadingImage} className='App-logo' alt='logo'/>
+              </div>
             )
           }
         </div>
