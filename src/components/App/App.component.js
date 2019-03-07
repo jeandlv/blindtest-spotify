@@ -20,35 +20,11 @@ const ALT_TEXT_COVER_IMG = "Album Cover Image";
 const TEXT_LOADED_TRACKS = "Your library tracks were well loaded"
 const TEXT_APPLICATION_LOADED = "Bonjour";
 
-function shuffleArray(array) {
-  let counter = array.length;
-
-  while (counter > 0) {
-    let index = getRandomNumber(counter);
-    counter--;
-    let temp = array[counter];
-    array[counter] = array[index];
-    array[index] = temp;
-  }
-
-  return array;
-}
-
-/* Return a random number between 0 included and x excluded */
-function getRandomNumber(x) {
-  return Math.floor(Math.random() * x);
-}
-
 class App extends Component {
 
   constructor() {
     super();
     this.trackTimer = null;
-    this.state = {
-      songsLoaded: false,
-      currentTrack: '',
-      proposedTracks: []
-    };
   }
 
   componentDidMount() {
@@ -62,26 +38,23 @@ class App extends Component {
     .then((data) => {
       data.items = get(data, 'items', [])
       this.props.loadTracks(data.items);
-      this.pickNewTracks();
-      this.setState({
-        songsLoaded: true
-      });
+      this.props.newGame(data.items);
       this.setTimer();
+      this.props.readyToPlay();
     })
   }
 
   setTimer = () => {
     let self = this;
-    this.trackTimer = setTimeout(function() {self.changeTrack()}, 30000)
+    this.trackTimer =  setTimeout(function() {self.changeTrack()}, 30000);
   }
 
   checkAnswer = (answerId) => {
-    if (answerId === this.state.currentTrack.track.id) {
+    if (answerId === this.props.game.currentTrack.track.id) {
       clearTimeout(this.trackTimer)
       swal('Bravo', 'Vous avez la boonne réponse', SWAL_SUCCESS)
       .then( () => {
           this.props.changeScoreWhenWinning();
-          this.props.setNewRound();
           this.changeTrack();
         }
       );
@@ -95,30 +68,15 @@ class App extends Component {
     }
   }
 
-  pickNewTracks = () => {
-    let currentTrack = this.getRandomTrack();
-    let secondTrack = this.getRandomTrack();
-    let thirdTrack = this.getRandomTrack();
-    this.setState({
-      proposedTracks: shuffleArray([currentTrack, secondTrack, thirdTrack]),
-      currentTrack: currentTrack
-    });
-  }
-
   changeTrack = () => {
     clearTimeout(this.trackTimer);
-    this.pickNewTracks();
+    this.props.newGame(this.props.tracks.content);
     this.setTimer();
   }
 
-
-  getRandomTrack = () => {
-    return this.props.tracks.length > 2 ? this.props.tracks[getRandomNumber(this.props.tracks.length)] : {};
-  }
-
   render() {
-    const currentTrack = this.state.currentTrack;
-    const tracksToPropose = this.state.proposedTracks;
+    const currentTrack = this.props.game.currentTrack;
+    const tracksToPropose = this.props.game.proposedTracks;
 
     return (
       <div className='App'>
@@ -127,16 +85,16 @@ class App extends Component {
           <h1 className='App-title'>Bienvenue sur le Blindtest</h1>
         </header>
         <div className='App-images'>
-          {this.state.songsLoaded ? 
+          {this.props.tracks.loaded ? 
             (
               <div>
-                {this.props.tracks.length > 0 ? (
+                {this.props.tracks.content.length > 0 ? (
                   <div>
                     <p>{TEXT_LOADED_TRACKS}</p>
-                    <p>Nombre de musiques chargées : {this.props.tracks.length}</p>
-                    <p>Nom de la première musique : {this.props.tracks[0].track.name}</p>
-                    <p>Manche : {this.props.progression.round}</p>
-                    <p>Score : {this.props.progression.score} points</p>
+                    <p>Nombre de musiques chargées : {this.props.tracks.content.length}</p>
+                    <p>Nom de la première musique : {this.props.tracks.content[0].track.name}</p>
+                    <p>Manche : {this.props.game.round}</p>
+                    <p>Score : {this.props.score} points</p>
                     <AlbumCover track={currentTrack.track}/>
                     <Sound url={currentTrack.track.preview_url} playStatus={Sound.status.PLAYING}/>
                   </div>
@@ -154,7 +112,7 @@ class App extends Component {
           }
         </div>
         <div className='App-buttons'>
-          {this.state.songsLoaded  && this.props.tracks.length > 2 ? 
+          {this.props.tracks.loaded  && this.props.tracks.content.length > 2 ? 
             (
               tracksToPropose.map(item => (
                   <Button key={uuid.v4()} onClick={() => this.checkAnswer(item.track.id)}>{item.track.name}</Button>

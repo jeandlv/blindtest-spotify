@@ -5,9 +5,11 @@ import tracks from './Tracks/reducer';
 // import currentTrack from './currentTrack';
 // import proposedTracks from './proposedTracks';
 // import round from './round';
-import progression from './Scoring/reducer';
+import score from './Scoring/reducer';
+import game from './Game/reducer';
 
 export default combineReducers({
-  tracks,
-  progression
+	tracks,
+	score,
+	game,
 });
