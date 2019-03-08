@@ -28,6 +28,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    this.props.loadTracksSaga();
     fetch('https://api.spotify.com/v1/me/tracks', {
       method: 'GET',
       headers: {
