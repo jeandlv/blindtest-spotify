@@ -1,0 +1,5 @@
+export const CHANGE_SCORE_LOSE = 'CHANGE_SCORE_LOSE';
+
+export const CHANGE_SCORE_SUCCESS = 'CHANGE_SCORE_SUCCESS';
+
+export const NEW_ROUND = 'NEW_ROUND';
