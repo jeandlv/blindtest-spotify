@@ -1,33 +1,32 @@
 import { call, put, takeLatest } from 'redux-saga/effects'
 import spotifyApi from '../../spotifyApiKey.json';
 import * as constants from './constants';
-
-console.log("In file Tracks sagas");
+import * as game_constants from '../Game/constants';
+import { newGame } from '../Game/actions'
 
 const apiToken = spotifyApi.spotifyApiToken
 
-const fetchTracksApi = () => 
+const fetchTracksApi = () =>
     fetch('https://api.spotify.com/v1/me/tracks', {
       method: 'GET',
       headers: {
        Authorization: 'Bearer ' + apiToken,
       },
-    });
+    })
+    .then(response => response.json());
 
 
 export function* fetchTracks(dispatch) {
     try {
-        console.log('In fetch tracks')
         const result = yield call(fetchTracksApi)
-        console.log('result :', result);
-        yield put({type : constants.LOAD_TRACKS, result})
+        yield put({type: constants.LOAD_TRACKS, tracks: result.items})
+        yield put(newGame(result.items))
+        yield put({type: constants.READY_TO_PLAY})
     } catch(error) {
-        console.log('In fetch tracks error :', error);
         yield put({type: "FETCH_TRACKS_FAILED", error})
     }
 }
 
 export function* watchFetchTracks() {
-    console.log('In watch fetch tracks')
     yield takeLatest(constants.FETCH_TRACKS, fetchTracks)
 }

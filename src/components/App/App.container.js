@@ -10,15 +10,12 @@ import { newGame } from '../../redux/Game/actions';
 const mapStateToProps = state => ({
   tracks: state.tracks,
   score: state.score,
-  game: state.game
+  game: state.game,
 })
 
 const mapDispatchToProps = dispatch => ({
-  loadTracks: tracks => dispatch(loadTracks(tracks)),
   readyToPlay: () => dispatch(readyToPlay()),
   loadTracksSaga : () => dispatch(loadTracksSaga()),
-  changeScoreWhenWinning: () => dispatch(changeScoreWhenWinning()),
-  changeScoreWhenLosing: () => dispatch(changeScoreWhenLosing()),
   newGame: loadedTracks => dispatch(newGame(loadedTracks)),
 })
 
