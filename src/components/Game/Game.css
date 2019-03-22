@@ -1,0 +1,12 @@
+.Game {
+    text-align: center;
+}
+
+.Game-track {
+    margin-top: 20px;
+  }
+
+.Game-buttons {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}

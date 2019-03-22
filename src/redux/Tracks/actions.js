@@ -5,6 +5,10 @@ export const loadTracks = tracks => ({
 	tracks
 });
 
+export const loadTracksSaga = tracks => ({
+	type: constants.FETCH_TRACKS
+})
+
 export const readyToPlay = () => ({
 	type: constants.READY_TO_PLAY
 });
